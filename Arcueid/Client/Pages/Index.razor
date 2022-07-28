@@ -1,0 +1,54 @@
+﻿@page "/"
+
+<PageTitle>Index</PageTitle>
+
+<TelerikStackLayout Orientation="StackLayoutOrientation.Vertical"
+                    Width="100%"
+                    Height="100%"
+                    HorizontalAlign="StackLayoutHorizontalAlign.Center">
+    <div>
+        <h2>Grid</h2>
+    </div>
+
+    <TelerikGrid Data="GridData"
+                 Pageable="true"
+                 Sortable="true"
+                 FilterMode="GridFilterMode.FilterRow">
+        <GridColumns>
+            <GridColumn Field="Name" Title="Product name" />
+            <GridColumn Field="Price" />
+            <GridColumn Field="@(nameof(Product.Released))" />
+            <GridColumn Field="@(nameof(Product.Discontinued))" />
+        </GridColumns>
+    </TelerikGrid>
+</TelerikStackLayout>
+
+@code
+{
+    List<Product>? GridData { get; set; }
+
+    protected override void OnInitialized()
+    {
+        GridData = Enumerable.Range(1, 42)
+            .Select(x => new Product
+                {
+                    Id = x,
+                    Name = $"Product name {x}",
+                    Price = (decimal)(x * 3.14),
+                    Released = DateTime.Now.AddMonths(-x).Date,
+                    Discontinued = x % 5 == 0
+                }).ToList();
+
+        base.OnInitialized();
+    }
+
+    public class Product
+    {
+        public int Id { get; set; }
+        public string? Name { get; set; }
+        public decimal Price { get; set; }
+        public DateTime Released { get; set; }
+        public bool Discontinued { get; set; }
+    }
+}
+
