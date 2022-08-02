@@ -13,6 +13,8 @@ builder.Services.AddDbContext<ArcueidContext>(options =>
     options.UseSqlServer(connectionString);
 });
 
+builder.Services.AddSwaggerGen();
+
 builder.Services.AddAutoMapper(typeof(DogProfile).Assembly);
 
 builder.Services.AddScoped<IDogService, DogService>();
@@ -41,6 +43,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseSwagger();
 
 app.MapRazorPages();
 app.MapControllers();
