@@ -1,0 +1,22 @@
+﻿@page "/dogs"
+@using Arcueid.Shared.Dto
+@inject HttpClient Http
+
+<h3>Dogs</h3>
+
+<ul>
+    @foreach (var dog in _dogs)
+    {
+        <li>@dog.Name - @dog.Age - @dog.Breed.Name</li>
+    }
+</ul>
+
+@code {
+    private IEnumerable<DogDto> _dogs = new List<DogDto>();
+
+    protected override async void OnInitialized()
+    {
+        Http.BaseAddress = new Uri("http://localhost:5284/");
+        _dogs = await Http.GetFromJsonAsync<List<DogDto>>("api/Dog");
+    }
+}

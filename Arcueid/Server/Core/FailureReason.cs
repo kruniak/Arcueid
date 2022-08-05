@@ -8,6 +8,6 @@ public enum FailureReason
     InvalidToken,
     Unauthorized,
     LockedOut,
-    NotAllowded,
+    NotAllowed,
     GenericError
 }

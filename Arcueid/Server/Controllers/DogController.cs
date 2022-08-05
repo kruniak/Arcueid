@@ -13,17 +13,17 @@ namespace Arcueid.Server.Controllers;
 [ApiController]
 public class DogController : BaseController
 {
-    private IDogService dogService;
+    private readonly IDogService _dogService;
 
     public DogController(IDogService dogService)
     {
-        this.dogService = dogService;
+        this._dogService = dogService;
     }
 
     [HttpGet]
     public async Task<IActionResult> Get()
     {
-        var result = await dogService.GetDogsAsync();
+        var result = await _dogService.GetDogsAsync();
         var response = CreateResponse(result);
 
         return response;
@@ -32,7 +32,7 @@ public class DogController : BaseController
     [HttpPost]
     public async Task<IActionResult> Add(DogDto dog)
     {
-        var result = await dogService.AddDogAsync(dog);
+        var result = await _dogService.AddDogAsync(dog);
         var response = CreateResponse(result);
 
         return response;

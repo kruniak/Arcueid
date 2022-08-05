@@ -13,44 +13,47 @@ public abstract class BaseController : ControllerBase
 {
     protected IActionResult CreateResponse(OperationResult operationResult, int? responseStatusCode = null)
     {
-        if (operationResult.Success)
-        {
-            return StatusCode(responseStatusCode.GetValueOrDefault(StatusCodes.Status204NoContent));
-        }
-
-        return Problem(FailureReasonToStatusCode(operationResult.FailureReason), null, operationResult.ErrorMessage, operationResult.ErrorDetail, operationResult.ValidationErrors);
+        return operationResult.Success ? StatusCode(responseStatusCode.GetValueOrDefault(StatusCodes.Status204NoContent)) : Problem(FailureReasonToStatusCode(operationResult.FailureReason), null, operationResult.ErrorMessage, operationResult.ErrorDetail, operationResult.ValidationErrors);
     }
 
     protected IActionResult CreateResponse<T>(OperationResult<T?> operationResult, int? responseStatusCode = null)
         => CreateResponse(operationResult, null, null, responseStatusCode);
 
-    protected IActionResult CreateResponse<T>(OperationResult<T?> operationResult, string? actionName, object? routeValues = null, int? responseStatusCode = null)
+    private IActionResult CreateResponse<T>(OperationResult<T?> operationResult, string? actionName, object? routeValues = null, int? responseStatusCode = null)
     {
-        if (operationResult.Success)
+        if (!operationResult.Success)
         {
-            if (operationResult.Content != null)
-            {
-                if (!string.IsNullOrWhiteSpace(actionName))
-                {
-                    var routeValueDictionary = new RouteValueDictionary(routeValues);
-                    return CreatedAtRoute(actionName, routeValueDictionary, operationResult.Content);
-                }
-                else if (operationResult.Content is StreamFileContent streamFileContent)
-                {
-                    return File(streamFileContent.Content, streamFileContent.ContentType, streamFileContent.DownloadFileName);
-                }
-                else if (operationResult.Content is ByteArrayFileContent byteArrayFileContent)
-                {
-                    return File(byteArrayFileContent.Content, byteArrayFileContent.ContentType, byteArrayFileContent.DownloadFileName);
-                }
+            return Problem(FailureReasonToStatusCode(operationResult.FailureReason), operationResult.Content,
+                operationResult.ErrorMessage, operationResult.ErrorDetail, operationResult.ValidationErrors);
+        }
 
-                return Ok(operationResult.Content);
-            }
-
+        if (operationResult.Content == null)
+        {
             return StatusCode(responseStatusCode.GetValueOrDefault(StatusCodes.Status204NoContent));
         }
 
-        return Problem(FailureReasonToStatusCode(operationResult.FailureReason), operationResult.Content, operationResult.ErrorMessage, operationResult.ErrorDetail, operationResult.ValidationErrors);
+        switch (string.IsNullOrWhiteSpace(actionName))
+        {
+            case false:
+            {
+                var routeValueDictionary = new RouteValueDictionary(routeValues);
+                return CreatedAtRoute(actionName, routeValueDictionary, operationResult.Content);
+            }
+            default:
+            {
+                switch (operationResult.Content)
+                {
+                    case StreamFileContent streamFileContent:
+                        return File(streamFileContent.Content, streamFileContent.ContentType, streamFileContent.DownloadFileName);
+                    case ByteArrayFileContent byteArrayFileContent:
+                        return File(byteArrayFileContent.Content, byteArrayFileContent.ContentType, byteArrayFileContent.DownloadFileName);
+                }
+
+                break;
+            }
+        }
+
+        return Ok(operationResult.Content);
     }
 
     protected IActionResult Problem(IEnumerable<ValidationError>? validationErrors)
@@ -107,7 +110,7 @@ public abstract class BaseController : ControllerBase
             FailureReason.ItemNotFound => StatusCodes.Status404NotFound,
             FailureReason.ClientError => StatusCodes.Status400BadRequest,
             FailureReason.InvalidToken => StatusCodes.Status419AuthenticationTimeout,
-            FailureReason.NotAllowded => StatusCodes.Status424FailedDependency,
+            FailureReason.NotAllowed => StatusCodes.Status424FailedDependency,
             _ => defaultResponseStatusCode.GetValueOrDefault(StatusCodes.Status500InternalServerError)
         };
 }

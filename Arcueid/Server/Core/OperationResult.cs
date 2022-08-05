@@ -5,18 +5,18 @@ public class OperationResult
     public bool Success { get; }
     public FailureReason FailureReason { get; }
     public Exception? Error { get; }
-    private readonly string? errorMessage;
-    public string? ErrorMessage => errorMessage ?? Error?.Message;
-    private readonly string? errorDetail;
-    public string? ErrorDetail => errorDetail ?? Error?.InnerException?.Message;
+    private readonly string? _errorMessage;
+    public string? ErrorMessage => _errorMessage ?? Error?.Message;
+    private readonly string? _errorDetail;
+    public string? ErrorDetail => _errorDetail ?? Error?.InnerException?.Message;
     public IEnumerable<ValidationError>? ValidationErrors { get; }
 
     internal OperationResult(bool success = true, FailureReason failureReason = FailureReason.None, string? message = null, string? detail = null, Exception? error = null, IEnumerable<ValidationError>? validationErrors = null)
     {
         Success = success;
         FailureReason = failureReason;
-        errorMessage = message;
-        errorDetail = detail;
+        _errorMessage = message;
+        _errorDetail = detail;
         Error = error;
         ValidationErrors = validationErrors;
     }
