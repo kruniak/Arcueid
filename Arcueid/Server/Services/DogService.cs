@@ -16,7 +16,7 @@ public class DogService : IDogService
     public DogService(ArcueidContext arcueidContext, IMapper mapper)
     {
         _dbContext = arcueidContext;
-        this._mapper = mapper;
+        _mapper = mapper;
     }
 
     public async Task<OperationResult<IEnumerable<DogBreedDto>>> GetDogBreedsAsync()
