@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Arcueid.Server.Database.Entities;
 
-// (sort of) relevant NOTE regarding all entities: we could nullable backing fields
+// (sort of) relevant NOTE regarding all entities: we could have nullable backing fields
 //  accessible from non-nullable properties as described in this article:
 //  https://docs.microsoft.com/en-us/ef/core/miscellaneous/nullable-reference-types
 //  but initializing props with the null-forgiving operator is terser and simpler.
