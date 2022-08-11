@@ -10,56 +10,59 @@ namespace Arcueid.Server.Services;
 
 public class DogService : IDogService
 {
-    private readonly ArcueidContext dbContext;
-    private readonly IMapper mapper;
+    private readonly ArcueidContext _dbContext;
+    private readonly IMapper _mapper;
 
     public DogService(ArcueidContext arcueidContext, IMapper mapper)
     {
-        dbContext = arcueidContext;
-        this.mapper = mapper;
+        _dbContext = arcueidContext;
+        this._mapper = mapper;
     }
 
-    public async Task<OperationResult<IEnumerable<DogBreedDto>?>> GetDogBreedsAsync()
+    public async Task<OperationResult<IEnumerable<DogBreedDto>>> GetDogBreedsAsync()
     {
-        var dogBreeds = await dbContext.DogBreeds
-            .ProjectTo<DogBreedDto>(mapper.ConfigurationProvider)
+        var dogBreeds = await _dbContext.DogBreeds
+            .ProjectTo<DogBreedDto>(_mapper.ConfigurationProvider)
             .ToListAsync();
 
         return dogBreeds;
     }
 
-    public async Task<OperationResult<IEnumerable<DogDto>?>> GetDogsAsync()
+    public async Task<OperationResult<IEnumerable<DogDto>>> GetDogsAsync()
     {
-        var dogs = await dbContext.Dogs
-            .ProjectTo<DogDto>(mapper.ConfigurationProvider)
+        var dogs = await _dbContext.Dogs
+            .ProjectTo<DogDto>(_mapper.ConfigurationProvider)
+            .ToListAsync();
+
+        return dogs;
+    }
+    public async Task<OperationResult<IEnumerable<DogDto>>> GetDogsByNameAsync(string name)
+    {
+        var dogs = await _dbContext.Dogs
+            .ProjectTo<DogDto>(_mapper.ConfigurationProvider)
             .ToListAsync();
 
         return dogs;
     }
 
-    public async Task<OperationResult<IEnumerable<DogDto>?>> GetDogsByBreedAsync(DogBreedDto dogBreed)
+    public async Task<OperationResult<IEnumerable<DogDto>>> GetDogsByBreedAsync(DogBreedDto dogBreed)
     {
-        var dogs = await dbContext.Dogs
+        var dogs = await _dbContext.Dogs
             .Where(d => d.Breed.Id == dogBreed.Id)
-            .ProjectTo<DogDto>(mapper.ConfigurationProvider)
+            .ProjectTo<DogDto>(_mapper.ConfigurationProvider)
             .ToListAsync();
 
         return dogs;
     }
 
-    public async Task<OperationResult<DogDto?>> AddDogAsync(DogDto dogDto)
+    public async Task<OperationResult<DogDto>> AddDogAsync(DogDto dogDto)
     {
-        if (dogDto == null)
-        {
-            return OperationResult.Fail(FailureReason.ClientError);
-        }
+        var dog = _mapper.Map<Dog>(dogDto);
 
-        var dog = mapper.Map<Dog>(dogDto);
+        var newDog = _dbContext.Dogs.Add(dog).Entity;
 
-        var newDog = dbContext.Dogs.Add(dog).Entity;
+        await _dbContext.SaveChangesAsync();
 
-        await dbContext.SaveChangesAsync();
-
-        return mapper.Map<DogDto>(newDog);
+        return _mapper.Map<DogDto>(newDog);
     }
 }

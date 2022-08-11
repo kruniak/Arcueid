@@ -1,4 +1,5 @@
-﻿using Arcueid.Server.Core;
+﻿using System.Runtime.InteropServices;
+using Arcueid.Server.Core;
 using Arcueid.Server.Database;
 using Arcueid.Server.Database.Entities;
 using Arcueid.Server.Services;
@@ -13,17 +14,26 @@ namespace Arcueid.Server.Controllers;
 [ApiController]
 public class DogController : BaseController
 {
-    private IDogService dogService;
+    private readonly IDogService _dogService;
 
     public DogController(IDogService dogService)
     {
-        this.dogService = dogService;
+        _dogService = dogService;
     }
 
     [HttpGet]
     public async Task<IActionResult> Get()
     {
-        var result = await dogService.GetDogsAsync();
+        var result = await _dogService.GetDogsAsync();
+        var response = CreateResponse(result);
+
+        return response;
+    }
+
+    [HttpGet("name")]
+    public async Task<IActionResult> GetDogsByName(string name)
+    {
+        var result = await _dogService.GetDogsByNameAsync(name);
         var response = CreateResponse(result);
 
         return response;
@@ -32,7 +42,7 @@ public class DogController : BaseController
     [HttpPost]
     public async Task<IActionResult> Add(DogDto dog)
     {
-        var result = await dogService.AddDogAsync(dog);
+        var result = await _dogService.AddDogAsync(dog);
         var response = CreateResponse(result);
 
         return response;
