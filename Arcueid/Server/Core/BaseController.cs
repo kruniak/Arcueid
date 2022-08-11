@@ -16,13 +16,10 @@ public abstract class BaseController : ControllerBase
         return operationResult.Success ? StatusCode(responseStatusCode.GetValueOrDefault(StatusCodes.Status204NoContent)) : Problem(FailureReasonToStatusCode(operationResult.FailureReason), null, operationResult.ErrorMessage, operationResult.ErrorDetail, operationResult.ValidationErrors);
     }
 
-        return Problem(FailureReasonToStatusCode(operationResult.FailureReason), null, operationResult.ErrorMessage, operationResult.ErrorDetail, operationResult.ValidationErrors);
-    }
-
     protected IActionResult CreateResponse<T>(OperationResult<T> operationResult, int? responseStatusCode = null)
         => CreateResponse(operationResult, null, null, responseStatusCode);
 
-    protected IActionResult CreateResponse<T>(OperationResult<T> operationResult, string? actionName, object? routeValues = null, int? responseStatusCode = null)
+    private IActionResult CreateResponse<T>(OperationResult<T> operationResult, string? actionName, object? routeValues = null, int? responseStatusCode = null)
     {
         if (!operationResult.Success)
         {
