@@ -21,7 +21,7 @@ jobs:
       env:
         telerik_username: ${{ secrets.TELERIK_USERNAME }}
         telerik_password: ${{ secrets.TELERIK_PASSWORD }}
-      run: dotnet nuget add source https://nuget.telerik.com/nuget --name telerik.com --username "$telerik_username" --store-password-in-clear-text --password "$telerik_password"
+      run: dotnet nuget add source https://nuget.telerik.com/v3/index.json --name telerik.com --username "$telerik_username" --password "$telerik_password"
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
