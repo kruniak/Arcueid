@@ -17,10 +17,10 @@ jobs:
       uses: actions/setup-dotnet@v2
       with:
         dotnet-version: 6.0.x
-    - name: Register Nuget Packages
-      env: # Or as an environment variable
-      telerik_username: ${{ secrets.TELERIK_USERNAME }}
-      telerik_password: ${{ secrets.TELERIK_PASSWORD }}
+    - name: Register Nuget packages
+      env:
+        telerik_username: ${{ secrets.TELERIK_USERNAME }}
+        telerik_password: ${{ secrets.TELERIK_PASSWORD }}
       run: dotnet nuget add source https://nuget.telerik.com/nuget --name telerik.com --username "$telerik_username" --store-password-in-clear-text --password "$telerik_password"
     - name: Restore dependencies
       run: dotnet restore
