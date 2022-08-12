@@ -19,3 +19,6 @@ EF migrations:
 docs: https://docs.microsoft.com/en-us/ef/core/managing-schemas/migrations/?tabs=dotnet-core-cli
 [...]
 
+
+## blazor
+add nuget feeds (like telerik) https://docs.telerik.com/blazor-ui/installation/nuget
